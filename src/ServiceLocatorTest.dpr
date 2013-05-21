@@ -6,8 +6,8 @@ program ServiceLocatorTest;
 
 uses
   DUnitTestRunner,
-  ServiceManager in 'ServiceManager.pas',
-  TestServiceManager in 'TestServiceManager.pas';
+  ServiceLocator in 'ServiceLocator.pas',
+  TestServiceLocator in 'TestServiceLocator.pas';
 
 {R *.RES}
 

@@ -6,6 +6,8 @@ uses
   Generics.Collections, System.SysUtils;
 
 type
+  EServiceAlreadyRegisteredException = class(Exception);
+  EServiceNotRegisteredException = class(Exception);
   TServiceLocator = class
   private
     fServices : TDictionary<TGuid, IInterface>;
@@ -27,10 +29,10 @@ var
   Guid: TGuid;
 begin
   if not Assigned(IntfInstance) then
-    raise Exception.Create('Cannot add a nil instance');
+    raise EArgumentNilException.Create('Cannot add a nil instance');
 
   if Available<ServiceType> then
-    raise Exception.Create('Interface type already registered');
+    raise EServiceAlreadyRegisteredException.Create('Service type already registered');
 
   Guid := PTypeInfo(TypeInfo(ServiceType)).TypeData.Guid;
 
@@ -66,8 +68,18 @@ begin
   Result := nil;
   Guid := PTypeInfo(TypeInfo(ServiceType)).TypeData.Guid;
   if fServices.TryGetValue(Guid, LInterface) then
+  begin
     if Supports(LInterface, Guid, LSpecificInterface) then
+    begin
       Result := LSpecificInterface;
+    end
+    else
+      raise EIntfCastError.Create(Format('Service %s not supported',
+                                         [PTypeInfo(TypeInfo(ServiceType)).Name]));
+  end
+  else
+    raise EServiceNotRegisteredException.Create(Format('Service %s not registered',
+                                                       [PTypeInfo(TypeInfo(ServiceType)).Name]));
 end;
 
 procedure TServiceLocator.Remove<ServiceType>;
@@ -75,7 +87,8 @@ var
   Guid: TGuid;
 begin
   if not Available<ServiceType> then
-    raise Exception.Create('Interface type not registered');
+    raise EServiceNotRegisteredException.Create(Format('Service %s not registered',
+                                                       [PTypeInfo(TypeInfo(ServiceType)).Name]));
 
   Guid := PTypeInfo(TypeInfo(ServiceType)).TypeData.Guid;
 

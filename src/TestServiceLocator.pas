@@ -104,8 +104,9 @@ var
 begin
   FServiceLocator.Add<IService1>(TObject1.Create as IService1);
   Service1Instance := FServiceLocator.Get<IService1>;
+  ExpectedException := EServiceNotRegisteredException;
   Service2Instance := FServiceLocator.Get<IService2>;
-
+  StopExpectingException('Get on a non-existant service failed to raise an exception');
   Check(not Assigned(Service2Instance), 'Get returned an instance even when it was not added');
 end;
 
@@ -138,7 +139,7 @@ end;
 
 procedure TestTServiceLocator.TestRemoveWhenNotAdded;
 begin
-  ExpectedException := Exception;
+  ExpectedException := EServiceNotRegisteredException;
   FServiceLocator.Remove<IService1>;
   StopExpectingException('Removing a non-existant instance should have failed');
 end;
@@ -154,7 +155,7 @@ end;
 procedure TestTServiceLocator.TestAddAlreadyAdded;
 begin
   FServiceLocator.Add<IService1>(TObject1.Create as IService1);
-  ExpectedException := Exception;
+  ExpectedException := EServiceAlreadyRegisteredException;
   FServiceLocator.Add<IService1>(TObject2.Create as IService1);
   StopExpectingException('Adding a second instance of the same interface should have failed');
 end;
@@ -167,7 +168,7 @@ end;
 
 procedure TestTServiceLocator.TestAddWhenNull;
 begin
-  ExpectedException := Exception;
+  ExpectedException := EArgumentNilException;
   FServiceLocator.Add<IService1>(nil);
   StopExpectingException('Adding a nil instance should have failed');
 end;
