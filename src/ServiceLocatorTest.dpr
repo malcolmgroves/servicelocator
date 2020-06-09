@@ -5,7 +5,9 @@ program ServiceLocatorTest;
 {$ENDIF}
 
 uses
-  DUnitTestRunner,
+// Only one of the next two lines should be uncommented.
+//  DUnitTestRunner, // uncomment to use DUnit, or
+  TestInsight.Dunit, // uncomment to use TestInsight
   ServiceLocator in 'ServiceLocator.pas',
   TestServiceLocator in 'TestServiceLocator.pas';
 
@@ -13,6 +15,6 @@ uses
 
 begin
   ReportMemoryLeaksOnShutdown := True;
-  DUnitTestRunner.RunRegisteredTests;
+  RunRegisteredTests;
 end.
 
